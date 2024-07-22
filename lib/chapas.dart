@@ -1,8 +1,24 @@
 import 'dart:convert';
 import 'dart:core';
+import 'package:http/http.dart' as http;
 
 class Chapas {
   static String baseUrl = "http://181.213.92.95:8000";
+
+  static Future<List<ChapasModel>> getAllChapas() async
+  {
+    final response = await http.get(Uri.parse('${Chapas.baseUrl}/catalogo'));
+
+    if(response.statusCode == 200)
+    {
+      final data = jsonDecode(response.body) as List<dynamic>;
+      List<ChapasModel> chapasList = ChapasModelResponse.fromJson(data[1]).list;
+      
+      return chapasList;
+    }
+
+    throw Exception("Failed to load with code ${response.statusCode}");
+  }
 }
 
 class ChapasModel{
