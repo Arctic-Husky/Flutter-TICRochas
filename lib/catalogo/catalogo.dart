@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../chapas.dart';
+import 'package:flutter/services.dart';
 
 class Catalogo extends StatefulWidget {
   const Catalogo({super.key});
@@ -62,6 +63,8 @@ class CatalogoState extends State<Catalogo> {
 
   Widget _buildBody(BuildContext context) {
     int crossAxisCount = MediaQuery.of(context).size.width ~/ 180;
+    var mediaQuery = MediaQuery.of(context);
+
     return FutureBuilder<List<ChapasModel>>(
         future: futureChapas,
         builder: (context, snapshot) {
@@ -83,6 +86,9 @@ class CatalogoState extends State<Catalogo> {
                     padding: const WidgetStatePropertyAll<EdgeInsets>(
                         EdgeInsets.symmetric(horizontal: 16.0)),
                     leading: const Icon(Icons.search),
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
                   );
                 }, suggestionsBuilder: (context, controller) {
                   return List.empty();
@@ -96,46 +102,134 @@ class CatalogoState extends State<Catalogo> {
                       crossAxisCount: crossAxisCount),
                   itemBuilder: (context, index) {
                     // Acho que o container aqui nao ta funcionando por causa do gridview
-                    return Container(
-                        child: GestureDetector(
-                            onTap: () {
-                              debugPrint('Card ${index} tapped.');
-                            },
-                            child: Card(
-                                clipBehavior: Clip.hardEdge,
-                                child: InkWell(
-                                  splashColor: Colors.blue.withAlpha(30),
-                                  onTap: () {},
-                                  child: Column(
-                                    children: [
-                                      Align(
-                                          alignment: Alignment.topCenter,
-                                          child: CachedNetworkImage( // TODO: melhorar essa coisa da imagem, toda vez que ela sai da tela e volta ela parece ser baixada novamente
-                                              imageUrl: filteredChapas[index]
-                                                  .urlArquivo,
-                                              placeholder: (context, url) =>
-                                                  const CircularProgressIndicator(
-                                                    color: Color.fromARGB(
-                                                        255, 5, 6, 11),
-                                                  ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(Icons.error),
-                                              fit: BoxFit.contain)),
-                                      Expanded(
-                                          child: Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Center(
-                                                  child: Text(
-                                                      filteredChapas[index]
-                                                          .nomeArquivo)))),
-                                    ],
-                                  ),
-                                ))));
+                    return Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: InkWell(
+                          splashColor: Colors.blue.withAlpha(30),
+                          onTap: () async {
+                            await Future.delayed(Duration(milliseconds: 200));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) {
+                                      return ExpandedChapa(
+                                          filteredChapas[index]);
+                                    },
+                                    fullscreenDialog: true));
+                          },
+                          child: Column(
+                            children: [
+                              Align(
+                                  alignment: Alignment.topCenter,
+                                  child: CachedNetworkImage(
+                                      // TODO: melhorar essa coisa da imagem, toda vez que ela sai da tela e volta ela parece ser baixada novamente
+                                      // memCacheHeight: mediaQuery.size.height.toInt(),
+                                      // memCacheWidth: mediaQuery.size.width.toInt(),
+                                      maxWidthDiskCache: 500,
+                                      maxHeightDiskCache: 500,
+                                      imageUrl:
+                                          filteredChapas[index].urlArquivo,
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(
+                                            color:
+                                                Color.fromARGB(255, 5, 6, 11),
+                                          ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                      fit: BoxFit.contain)),
+                              Expanded(
+                                  child: Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Center(
+                                          child: Text(filteredChapas[index]
+                                              .nomeArquivo)))),
+                            ],
+                          ),
+                        ));
                   },
                 ))
               ]);
           }
         });
+  }
+}
+
+class ExpandedChapa extends StatelessWidget {
+  final ChapasModel chapa;
+
+  const ExpandedChapa(this.chapa, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    AppBar appBar = AppBar(
+      primary: false,
+      leading: const IconTheme(
+          data: IconThemeData(color: Colors.black),
+          child: CloseButton(
+              style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll<Color>(
+                Color.fromARGB(255, 254, 247, 255)),
+          ))),
+      // flexibleSpace: Container(
+      //   decoration: const BoxDecoration(
+      //     gradient: LinearGradient(
+      //       begin: Alignment.topCenter,
+      //       end: Alignment.bottomCenter,
+      //       colors: [Colors.transparent, Colors.transparent],
+      //     ),
+      //   ),
+      // ),
+      backgroundColor: Colors.transparent,
+    );
+
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+
+    return Stack(
+      children: <Widget>[
+        Hero(
+            tag: "extendedChapa",
+            child: Material(
+                child: Column(
+              children: <Widget>[
+                //Spacer(),
+                Expanded(
+                    child: InteractiveViewer(
+                        // TODO: ver melhor as barreiras de interação disso
+                        clipBehavior: Clip.none,
+                        maxScale: 4,
+                        child: CachedNetworkImage(
+                            // maxWidthDiskCache: 1000,
+                            // maxHeightDiskCache: 1000,
+                            imageUrl: chapa.urlArquivo,
+                            placeholder: (context, url) => const FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: CircularProgressIndicator(
+                                  color: Color.fromARGB(255, 5, 6, 11),
+                                )),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            fit: BoxFit.contain))),
+                Material(
+                    child: ListTile(
+                  title: Center(child: SelectableText(chapa.nomeArquivo)),
+                  subtitle: Center(child: Text(chapa.dataCriacao)),
+                )),
+                // Expanded(child: Center(child:Text("testeteste")),)
+              ],
+            ))),
+        Column(
+          children: <Widget>[
+            Container(
+              height: mediaQuery.padding.top,
+            ),
+            ConstrainedBox(
+              constraints:
+                  BoxConstraints(maxHeight: appBar.preferredSize.height),
+              child: appBar,
+            )
+          ],
+        )
+      ],
+    ); // Stack
   }
 }
