@@ -10,7 +10,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return const MaterialApp(home: const HomePage());
     return MaterialApp(
         title: "TIC Rochas",
         theme: ThemeData(
@@ -18,6 +17,7 @@ class MyApp extends StatelessWidget {
         initialRoute: "/",
         routes: {
           '/': (context) => const HomePage(),
+          '/tratamento': (context) => const TratamentoPage(), // talvez nao precise disto aqui
         });
   }
 }
@@ -27,6 +27,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.amber,
@@ -35,6 +36,26 @@ class HomePage extends StatelessWidget {
       ),
       // drawer: const Drawer(),
       body: const Catalogo(),
+      floatingActionButton: FloatingActionButton(hoverColor: const Color.fromARGB(255, 5, 6, 11).withAlpha(30),foregroundColor:const Color.fromARGB(255, 5, 6, 11), backgroundColor: colorScheme.surface, child: const Icon(Icons.add_photo_alternate), 
+      onPressed: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const TratamentoPage()));
+      },),
+    );
+  }
+}
+
+class TratamentoPage extends StatelessWidget{
+  const TratamentoPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        foregroundColor: Colors.amber,
+        backgroundColor: const Color.fromARGB(255, 5, 6, 11),
+        title: const Text("TIC Rochas"),
+        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: (){Navigator.pop(context);},)
+      ),
     );
   }
 }

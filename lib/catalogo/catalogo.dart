@@ -105,9 +105,9 @@ class CatalogoState extends State<Catalogo> {
                     return Card(
                         clipBehavior: Clip.hardEdge,
                         child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
+                          splashColor: const Color.fromARGB(30, 5, 6, 11),
                           onTap: () async {
-                            await Future.delayed(Duration(milliseconds: 200));
+                            await Future.delayed(const Duration(milliseconds: 200));
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
