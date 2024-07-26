@@ -1,16 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../chapas.dart';
-import 'package:flutter/services.dart';
+import '../main.dart';
 
 class Catalogo extends StatefulWidget {
-  const Catalogo({super.key});
+  const Catalogo(this.number, {super.key});
+
+  final RefreshPage number;
 
   @override
   State<StatefulWidget> createState() => CatalogoState();
 }
 
 class CatalogoState extends State<Catalogo> {
+  late RefreshPage number;
+
   final TextEditingController _searchController = TextEditingController();
 
   late Future<List<ChapasModel>> futureChapas;
@@ -20,6 +25,12 @@ class CatalogoState extends State<Catalogo> {
   @override
   void initState() {
     super.initState();
+    
+    number = widget.number;
+
+    number.addListener(() {
+      futureChapas = _getAllChapas();
+    },);
 
     futureChapas = _getAllChapas();
     _searchController.addListener(_filterChapas);
@@ -80,6 +91,7 @@ class CatalogoState extends State<Catalogo> {
               }
 
               return Column(children: <Widget>[
+                SizedBox(height: 20,),
                 SearchAnchor(builder: (context, controller) {
                   return SearchBar(
                     controller: _searchController,
@@ -93,6 +105,7 @@ class CatalogoState extends State<Catalogo> {
                 }, suggestionsBuilder: (context, controller) {
                   return List.empty();
                 }),
+                SizedBox(height: 20,),
                 Expanded(
                     child: GridView.builder(
                   scrollDirection: Axis.vertical,
@@ -112,6 +125,7 @@ class CatalogoState extends State<Catalogo> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) {
+                                      number.notify();
                                       return ExpandedChapa(
                                           filteredChapas[index]);
                                     },
@@ -119,7 +133,7 @@ class CatalogoState extends State<Catalogo> {
                           },
                           child: Column(
                             children: [
-                              Align(
+                              Expanded(child:Align(
                                   alignment: Alignment.topCenter,
                                   child: CachedNetworkImage(
                                       // TODO: melhorar essa coisa da imagem, toda vez que ela sai da tela e volta ela parece ser baixada novamente
@@ -136,7 +150,7 @@ class CatalogoState extends State<Catalogo> {
                                           ),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
-                                      fit: BoxFit.contain)),
+                                      fit: BoxFit.none))),
                               Expanded(
                                   child: Align(
                                       alignment: Alignment.bottomCenter,
@@ -201,6 +215,7 @@ class ExpandedChapa extends StatelessWidget {
                             // maxWidthDiskCache: 1000,
                             // maxHeightDiskCache: 1000,
                             imageUrl: chapa.urlArquivo,
+                            imageBuilder: (context, imageProvider) => Container(decoration: BoxDecoration(image: DecorationImage(image: imageProvider,fit: BoxFit.scaleDown,))),
                             placeholder: (context, url) => const FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: CircularProgressIndicator(
