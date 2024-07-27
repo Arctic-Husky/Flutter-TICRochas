@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../chapas.dart';
 import '../main.dart';
@@ -133,6 +132,7 @@ class CatalogoState extends State<Catalogo> {
                           },
                           child: Column(
                             children: [
+                              const SizedBox(height: 10,),
                               Expanded(child:Align(
                                   alignment: Alignment.topCenter,
                                   child: CachedNetworkImage(
@@ -151,12 +151,12 @@ class CatalogoState extends State<Catalogo> {
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
                                       fit: BoxFit.none))),
-                              Expanded(
+                              Flexible(
                                   child: Align(
                                       alignment: Alignment.bottomCenter,
                                       child: Center(
                                           child: Text(filteredChapas[index]
-                                              .nomeArquivo)))),
+                                              .nomeArquivo, textAlign: TextAlign.center)))),
                             ],
                           ),
                         ));
@@ -226,8 +226,8 @@ class ExpandedChapa extends StatelessWidget {
                             fit: BoxFit.contain))),
                 Material(
                     child: ListTile(
-                  title: Center(child: SelectableText(chapa.nomeArquivo)),
-                  subtitle: Center(child: Text(chapa.dataCriacao)),
+                  title: Center(child: SelectableText(chapa.nomeArquivo, textAlign: TextAlign.center)),
+                  subtitle: Center(child: Text(chapa.dataCriacao, textAlign: TextAlign.center)),
                 )),
                 // Expanded(child: Center(child:Text("testeteste")),)
               ],
