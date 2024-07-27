@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'catalogo/catalogo.dart';
 import 'tratamento/tratamento.dart';
 // import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 // import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 

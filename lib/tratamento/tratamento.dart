@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:namer_app/chapas.dart';
 import '../main.dart';
-import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
 
 class Tratamento extends StatefulWidget {
   const Tratamento(this.number, {super.key});
@@ -156,21 +155,19 @@ class TratamentoState extends State<Tratamento> {
   }
 
   Future _pickImageFromGallery() async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (returnedImage == null) {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result == null) {
       return;
     }
 
-    var bytes = await returnedImage.readAsBytes();
+    var bytes = await result.xFiles.first.readAsBytes();
 
     setState(() {
 
       base64Image = base64Encode(bytes);
-      print("BASENAME");
-      print(returnedImage.path);
-      fileName = basename(returnedImage.path);
+      fileName = result.files.first.name;
       importing = true;
     });
   }
