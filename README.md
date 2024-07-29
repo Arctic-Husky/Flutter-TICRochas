@@ -8,6 +8,10 @@ flutter pub get -> este vai fazer o flutter processar o arquivo pubspec e baixar
 
 flutter run -d web-server
 
+flutter build web
+
+python -m http.server 8080
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
