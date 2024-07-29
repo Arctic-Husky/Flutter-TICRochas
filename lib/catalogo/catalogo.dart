@@ -90,7 +90,7 @@ class CatalogoState extends State<Catalogo> {
               }
 
               return Column(children: <Widget>[
-                SizedBox(height: 20,),
+                SizedBox(height: 15,),
                 SearchAnchor(builder: (context, controller) {
                   return SearchBar(
                     controller: _searchController,

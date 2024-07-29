@@ -43,14 +43,17 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    double unitWidthValue = MediaQuery.of(context).size.width * 0.005;
+    
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.amber,
         backgroundColor: const Color.fromARGB(255, 5, 6, 11),
-        title: const Text("TIC Rochas"),
+        title: Row(children: [Image.asset('assets/logo.png',fit: BoxFit.contain, height: 60,),const Text("TIC Rochas")],),
       ),
       // drawer: const Drawer(),
-      body: Catalogo(number),
+      body: Column(children: [const SizedBox(height: 15,),Text("Catálogo", style: TextStyle(fontSize: 18+unitWidthValue),),Flexible(child:Catalogo(number))]),
       floatingActionButton: FloatingActionButton(hoverColor: const Color.fromARGB(255, 5, 6, 11).withAlpha(30),foregroundColor:const Color.fromARGB(255, 5, 6, 11), backgroundColor: colorScheme.surface, child: const Icon(Icons.add_photo_alternate), 
       onPressed: (){
         Navigator.push(context, MaterialPageRoute(builder: (context) => TratamentoPage(number)));
