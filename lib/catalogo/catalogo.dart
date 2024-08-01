@@ -73,7 +73,6 @@ class CatalogoState extends State<Catalogo> {
 
   Widget _buildBody(BuildContext context) {
     int crossAxisCount = MediaQuery.of(context).size.width ~/ 180;
-    var mediaQuery = MediaQuery.of(context);
 
     return FutureBuilder<List<ChapasModel>>(
         future: futureChapas,
@@ -90,7 +89,7 @@ class CatalogoState extends State<Catalogo> {
               }
 
               return Column(children: <Widget>[
-                SizedBox(height: 15,),
+                const SizedBox(height: 20,),
                 SearchAnchor(builder: (context, controller) {
                   return SearchBar(
                     controller: _searchController,
@@ -100,11 +99,12 @@ class CatalogoState extends State<Catalogo> {
                     onTapOutside: (event) {
                       FocusManager.instance.primaryFocus?.unfocus();
                     },
+                    hintText: "Pesquisar..",
                   );
                 }, suggestionsBuilder: (context, controller) {
                   return List.empty();
                 }),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 Expanded(
                     child: GridView.builder(
                   scrollDirection: Axis.vertical,
@@ -113,7 +113,6 @@ class CatalogoState extends State<Catalogo> {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount),
                   itemBuilder: (context, index) {
-                    // Acho que o container aqui nao ta funcionando por causa do gridview
                     return Card(
                         clipBehavior: Clip.hardEdge,
                         child: InkWell(
@@ -136,9 +135,7 @@ class CatalogoState extends State<Catalogo> {
                               Expanded(child:Align(
                                   alignment: Alignment.topCenter,
                                   child: CachedNetworkImage(
-                                      // TODO: melhorar essa coisa da imagem, toda vez que ela sai da tela e volta ela parece ser baixada novamente
-                                      // memCacheHeight: mediaQuery.size.height.toInt(),
-                                      // memCacheWidth: mediaQuery.size.width.toInt(),
+                                      // TODO: melhorar o carregamento das imagens, toda vez que ela sai da tela e volta ela parece ser baixada novamente
                                       maxWidthDiskCache: 500,
                                       maxHeightDiskCache: 500,
                                       imageUrl:
@@ -184,15 +181,6 @@ class ExpandedChapa extends StatelessWidget {
             backgroundColor: WidgetStatePropertyAll<Color>(
                 Color.fromARGB(255, 254, 247, 255)),
           ))),
-      // flexibleSpace: Container(
-      //   decoration: const BoxDecoration(
-      //     gradient: LinearGradient(
-      //       begin: Alignment.topCenter,
-      //       end: Alignment.bottomCenter,
-      //       colors: [Colors.transparent, Colors.transparent],
-      //     ),
-      //   ),
-      // ),
       backgroundColor: Colors.transparent,
     );
 
@@ -205,10 +193,8 @@ class ExpandedChapa extends StatelessWidget {
             child: Material(
                 child: Column(
               children: <Widget>[
-                //Spacer(),
                 Expanded(
                     child: InteractiveViewer(
-                        // TODO: ver melhor as barreiras de interação disso
                         clipBehavior: Clip.none,
                         maxScale: 4,
                         child: CachedNetworkImage(
@@ -229,7 +215,6 @@ class ExpandedChapa extends StatelessWidget {
                   title: Center(child: SelectableText(chapa.nomeArquivo, textAlign: TextAlign.center)),
                   subtitle: Center(child: Text(chapa.dataCriacao, textAlign: TextAlign.center)),
                 )),
-                // Expanded(child: Center(child:Text("testeteste")),)
               ],
             ))),
         Column(
